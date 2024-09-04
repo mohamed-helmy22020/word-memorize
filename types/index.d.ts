@@ -53,3 +53,19 @@ declare interface User {
     email: string;
     name: string;
 }
+declare interface WordSoundProps {
+    type: "UK" | "US";
+    soundLink: string;
+    phonetic?: string | null;
+}
+declare interface WordCardProps {
+    firstLang: string;
+    secondLang: string;
+    sound?: null | soundDataType[];
+}
+
+declare interface soundDataType {
+    type: "UK" | "US";
+    media: string;
+    phonetic?: string | null;
+}

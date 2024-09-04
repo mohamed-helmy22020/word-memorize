@@ -155,20 +155,26 @@ export const getEnglishWordData = async (word: string) => {
     const document = dom.window.document;
     if (document.title.includes("404")) return null;
 
-    const data: any = {};
-    data.USMedia =
-        "https://dictionary.cambridge.org" +
-        document.querySelector("#audio2")?.querySelector("source")?.src;
-    data.USPronunce = document
-        .querySelector('[data-pron-region="US"]')
-        ?.querySelector(".pron")?.textContent;
+    const data: soundDataType[] = [];
+    data.push({
+        type: "US",
+        media:
+            "https://dictionary.cambridge.org" +
+            document.querySelector("#audio2")?.querySelector("source")?.src,
+        phonetic: document
+            .querySelector('[data-pron-region="US"]')
+            ?.querySelector(".pron")?.textContent,
+    });
 
-    data.UKMedia =
-        "https://dictionary.cambridge.org" +
-        document.querySelector("#audio1")?.querySelector("source")?.src;
-    data.UKPronunce = document
-        .querySelector('[data-pron-region="UK"]')
-        ?.querySelector(".pron")?.textContent;
+    data.push({
+        type: "UK",
+        media:
+            "https://dictionary.cambridge.org" +
+            document.querySelector("#audio1")?.querySelector("source")?.src,
+        phonetic: document
+            .querySelector('[data-pron-region="UK"]')
+            ?.querySelector(".pron")?.textContent,
+    });
 
     return data;
 };

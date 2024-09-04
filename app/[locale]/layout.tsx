@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { IBM_Plex_Serif, Inter } from "next/font/google";
-
+import { Cairo, IBM_Plex_Serif, Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const ibmPlexSerif = IBM_Plex_Serif({
     subsets: ["latin"],
     weight: ["400", "700"],
     variable: "--font-ibm-plex-serif",
+});
+const cairo = Cairo({
+    subsets: ["arabic"],
+    weight: ["200", "300", "400", "500"],
+    variable: "--font-cairo",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +32,9 @@ export default async function LocaleLayout({
             dir={locale === "ar" ? "rtl" : "ltr"}
             className="dark"
         >
-            <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>
+            <body
+                className={`${inter.variable} ${ibmPlexSerif.variable} ${cairo.variable}`}
+            >
                 <NextIntlClientProvider messages={messages}>
                     {children}
                 </NextIntlClientProvider>

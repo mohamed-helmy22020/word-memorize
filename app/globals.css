@@ -122,9 +122,14 @@
     .word-card {
         background: rgba(17, 25, 40, 0.35);
         border: 1px solid rgba(255, 255, 255, 0.125);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-radius: 10px;
-        @apply flex flex-col w-60  h-72 justify-center items-center;
+        @apply flex flex-col h-fit p-8 items-center backdrop-blur-lg rounded-xl;
+    }
+    .first-lang {
+        font-family: --font-cairo;
+        @apply text-3xl;
+    }
+    .second-lang {
+        font-family: --font-ibm-plex-serif;
+        @apply text-3xl;
     }
 }
