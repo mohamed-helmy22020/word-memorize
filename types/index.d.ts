@@ -21,6 +21,7 @@ declare type User = {
     id: string;
     email: string;
     name: string;
+    languages: string[];
 };
 
 declare type NewUserParams = {
@@ -40,4 +41,15 @@ declare interface signInProps {
 }
 declare interface getUserInfoProps {
     userId: string;
+}
+declare interface sideBarProps {
+    user: User;
+}
+declare interface userCardProps {
+    user: User;
+}
+declare interface User {
+    id: string;
+    email: string;
+    name: string;
 }

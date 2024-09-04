@@ -95,4 +95,36 @@
     .flex-center {
         @apply flex items-center justify-center;
     }
+    .sidebar {
+        @apply bg-[#242526] sticky left-0 top-0 flex h-screen w-fit flex-col  gap-6 border-r border-l border-gray-700  pt-8 text-white max-md:hidden sm:p-4 xl:p-6 2xl:w-[355px];
+    }
+    .user-details {
+        @apply flex flex-col justify-around w-3/5;
+    }
+    .user-email {
+        @apply text-slate-200 text-[16px] font-semibold overflow-clip text-ellipsis;
+    }
+    .user-name {
+        @apply text-slate-400 text-sm;
+    }
+    .logout {
+        @apply flex justify-center items-center w-1/5 h-full cursor-pointer;
+    }
+    .languages {
+        @apply flex flex-col flex-grow overflow-auto gap-5 w-full;
+    }
+    .language {
+        @apply flex gap-1 border border-slate-600 rounded-md p-3 items-center cursor-pointer select-none w-11/12 justify-between;
+    }
+    .add-new-language {
+        @apply flex gap-1 border border-slate-600 rounded-md items-center cursor-pointer select-none w-11/12 justify-between;
+    }
+    .word-card {
+        background: rgba(17, 25, 40, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 10px;
+        @apply flex flex-col w-60  h-72 justify-center items-center;
+    }
 }

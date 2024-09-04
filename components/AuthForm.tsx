@@ -33,7 +33,6 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
         setIsLoading(true);
         setError("");
         const userData = { email: data.email, password: data.password };
-        console.log(data);
         try {
             if (type === "sign-up") {
                 const response = await signUp(userData);
@@ -46,7 +45,6 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
 
             if (type === "sign-in") {
                 const response = await signIn(userData);
-                console.log(response);
                 if (!response.error) {
                     router.push("/");
                     return;
