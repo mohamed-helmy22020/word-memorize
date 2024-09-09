@@ -21,7 +21,12 @@ declare type User = {
     id: string;
     email: string;
     name: string;
-    languages: string[];
+    languages: LanguageType[];
+};
+declare type LanguageType = {
+    $id: string;
+    name: string;
+    code: string;
 };
 
 declare type NewUserParams = {
@@ -53,19 +58,23 @@ declare interface User {
     email: string;
     name: string;
 }
-declare interface WordSoundProps {
-    type: "UK" | "US";
-    soundLink: string;
-    phonetic?: string | null;
-}
 declare interface WordCardProps {
     firstLang: string;
     secondLang: string;
-    sound?: null | soundDataType[];
 }
 
-declare interface soundDataType {
-    type: "UK" | "US";
-    media: string;
-    phonetic?: string | null;
+declare interface FolderProps {
+    name: string;
+}
+
+declare interface FolderType {
+    name: string;
+    path: string;
+    $id: string;
+}
+
+declare interface WordType {
+    firstLang: string;
+    secondLang: string;
+    $id: string;
 }

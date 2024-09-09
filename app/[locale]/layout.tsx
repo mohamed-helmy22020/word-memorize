@@ -17,6 +17,9 @@ const cairo = Cairo({
 export const metadata: Metadata = {
     title: "Word Memorizing",
     description: "app to help you to memorize word",
+    icons: {
+        icon: "/favicon.png",
+    },
 };
 export default async function LocaleLayout({
     children,

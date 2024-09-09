@@ -116,8 +116,14 @@
     .language {
         @apply flex gap-1 border border-slate-600 rounded-md p-3 items-center cursor-pointer select-none w-11/12 justify-between;
     }
-    .add-new-language {
+    .add-new-language,
+    .add-new-folder,
+    .add-new-word {
         @apply flex gap-1 border border-slate-600 rounded-md items-center cursor-pointer select-none w-11/12 justify-between;
+    }
+    .add-new-folder,
+    .add-new-word {
+        @apply w-60 mt-4;
     }
     .word-card {
         background: rgba(17, 25, 40, 0.35);
@@ -131,5 +137,12 @@
     .second-lang {
         font-family: --font-ibm-plex-serif;
         @apply text-3xl;
+    }
+    .folders-container,
+    .words-container {
+        @apply h-full flex flex-wrap flex-col w-full h-fit;
+    }
+    .folder {
+        @apply w-60 h-14 bg-gray-700 flex items-center rounded-md px-2 overflow-hidden gap-2 text-slate-300 cursor-pointer hover:bg-gray-600 select-none;
     }
 }

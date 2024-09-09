@@ -1,6 +1,27 @@
 {
-    "HomePage": {
-        "title": "Hello world!",
-        "about": "Go to the about page"
+    "Auth": {
+        "SignIn": "Sign In",
+        "desc": "Please enter your details.",
+        "Email": "Email",
+        "EnterEmail": "Enter your Email",
+        "Password": "Password",
+        "EnterPassword": "Enter your Password",
+        "NoAccount": "Don't have an account?",
+        "SignUp": "Sign Up",
+        "HaveAccount": "Already have an account?"
+    },
+    "UserCard": {
+        "LogOut": "Log Out"
+    },
+    "Languages": {
+        "Languages": "Languages"
+    },
+    "AddNewLanguage": {
+        "AddLanguage": "Add Language"
+    },
+    "AddNewLanguageDialog": {
+        "AddNewLanguage": "Add New Language",
+        "Language": "Language",
+        "Add": "Add"
     }
 }

@@ -1,5 +1,4 @@
 "use server";
-import { JSDOM } from "jsdom";
 import { cookies } from "next/headers";
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
@@ -7,6 +6,8 @@ import { parseStringify } from "../utils";
 const {
     APPWRITE_DATABASE_ID: DATABASE_ID,
     APPWRITE_USER_COLLECTION_ID: USER_COLLECTION_ID,
+    APPWRITE_FOLDERS_COLLECTION_ID: FOLDERS_COLLECTION_ID,
+    APPWRITE_WORDS_COLLECTION_ID: WORDS_COLLECTION_ID,
 } = process.env;
 
 export const getUserInfo = async ({ userId }: getUserInfoProps) => {
@@ -18,7 +19,6 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
             USER_COLLECTION_ID!,
             [Query.equal("id", [userId])]
         );
-
         return parseStringify(user.documents[0]);
     } catch (error) {
         console.log(error);
@@ -120,7 +120,7 @@ export const logoutAccount = async () => {
     }
 };
 
-export const addNewLang = async (lang: string) => {
+export const addNewLang = async (lang: { name: string; code: string }) => {
     const { database } = await createAdminClient();
     const { account } = await createSessionClient();
     const result = await account.get();
@@ -132,49 +132,176 @@ export const addNewLang = async (lang: string) => {
     );
     const { languages } = user.documents[0];
     languages.push(lang);
-    await database.updateDocument(
+    const a = await database.updateDocument(
         DATABASE_ID!,
         USER_COLLECTION_ID!,
         user.documents[0].$id,
         {
-            languages,
+            languages: [...languages],
         }
     );
+    return {
+        ...lang,
+        $id: a.languages[a.languages.length - 1].$id,
+    };
 };
 
 export const saveDataToCookies = (name: string, data: any) => {
     cookies().set(name, data);
 };
 
-export const getEnglishWordData = async (word: string) => {
-    const res = await fetch(
-        `https://dictionary.cambridge.org/pronunciation/english/${word}`
+export const getPathData = async (
+    userId: string,
+    languageId: string,
+    path: string
+) => {
+    const { database } = await createAdminClient();
+
+    const fetchedFolders = await database.listDocuments(
+        DATABASE_ID!,
+        FOLDERS_COLLECTION_ID!,
+        [
+            Query.select(["name", "path", "$id"]),
+            Query.and([
+                Query.equal("userId", [userId]),
+                Query.equal("languageId", [languageId]),
+                Query.equal("path", [path]),
+            ]),
+        ]
     );
-    const restext = await res.text();
-    const dom = new JSDOM(restext);
-    const document = dom.window.document;
-    if (document.title.includes("404")) return null;
+    const folders: FolderType[] = fetchedFolders.documents.map((folder) => ({
+        name: folder.name,
+        path: folder.path,
+        $id: folder.$id,
+    }));
 
-    const data: soundDataType[] = [];
-    data.push({
-        type: "US",
-        media:
-            "https://dictionary.cambridge.org" +
-            document.querySelector("#audio2")?.querySelector("source")?.src,
-        phonetic: document
-            .querySelector('[data-pron-region="US"]')
-            ?.querySelector(".pron")?.textContent,
-    });
+    const fetchedWords = await database.listDocuments(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        [
+            Query.select(["firstLang", "secondLang", "$id"]),
+            Query.and([
+                Query.equal("userId", [userId]),
+                Query.equal("languageId", [languageId]),
+                Query.equal("path", [path]),
+            ]),
+        ]
+    );
+    const words: WordType[] = fetchedWords.documents.map((w) => ({
+        $id: w.$id,
+        firstLang: w.firstLang,
+        secondLang: w.secondLang,
+    }));
+    return { folders, words };
+};
 
-    data.push({
-        type: "UK",
-        media:
-            "https://dictionary.cambridge.org" +
-            document.querySelector("#audio1")?.querySelector("source")?.src,
-        phonetic: document
-            .querySelector('[data-pron-region="UK"]')
-            ?.querySelector(".pron")?.textContent,
-    });
+export const addNewFolder = async (
+    name: string,
+    path: string,
+    languageId: string
+) => {
+    const { database } = await createAdminClient();
+    const { account } = await createSessionClient();
+    const result = await account.get();
 
-    return data;
+    const user = await database.listDocuments(
+        DATABASE_ID!,
+        USER_COLLECTION_ID!,
+        [Query.equal("id", [result.targets[0].userId])]
+    );
+    const fetchedFolders = await database.listDocuments(
+        DATABASE_ID!,
+        FOLDERS_COLLECTION_ID!,
+        [
+            Query.and([
+                Query.equal("userId", [user.documents[0].$id]),
+                Query.equal("languageId", [languageId]),
+                Query.equal("path", [path]),
+                Query.equal("name", [name]),
+            ]),
+        ]
+    );
+    if (fetchedFolders.documents.length >= 1)
+        return { error: "Folder already exists" };
+
+    const promise = await database.createDocument(
+        DATABASE_ID!,
+        FOLDERS_COLLECTION_ID!,
+        ID.unique(),
+        {
+            name,
+            path,
+            languageId,
+            userId: user.documents[0].$id,
+        }
+    );
+    console.log(promise);
+
+    if (!promise) return { error: "Error creating folder" };
+    return {
+        success: true,
+        newFolder: {
+            name,
+            path,
+            languageId,
+            userId: user.documents[0].$id,
+            $id: promise.$id,
+        },
+    };
+};
+
+export const addNewWord = async (
+    firstLang: string,
+    secondLang: string,
+    path: string,
+    languageId: string
+) => {
+    const { database } = await createAdminClient();
+    const { account } = await createSessionClient();
+    const result = await account.get();
+
+    const user = await database.listDocuments(
+        DATABASE_ID!,
+        USER_COLLECTION_ID!,
+        [Query.equal("id", [result.targets[0].userId])]
+    );
+    const fetchedWords = await database.listDocuments(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        [
+            Query.and([
+                Query.equal("userId", [user.documents[0].$id]),
+                Query.equal("languageId", [languageId]),
+                Query.equal("path", [path]),
+                Query.equal("firstLang", [firstLang]),
+                Query.equal("secondLang", [secondLang]),
+            ]),
+        ]
+    );
+    if (fetchedWords.documents.length >= 1)
+        return { error: "Word already exists" };
+
+    const promise = await database.createDocument(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        ID.unique(),
+        {
+            firstLang,
+            secondLang,
+            userId: user.documents[0].$id,
+            languageId,
+            path,
+        }
+    );
+    console.log(promise);
+
+    if (!promise) return { error: "Error creating word" };
+    return {
+        success: true,
+        newWord: {
+            firstLang,
+            secondLang,
+            $id: promise.$id,
+        },
+    };
 };

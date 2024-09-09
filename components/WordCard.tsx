@@ -1,47 +1,32 @@
 "use client";
+import { useLanguagesStore } from "@/store/userLanguages";
 import { Volume2 } from "lucide-react";
-import { useRef } from "react";
 
-const WordCard = ({ firstLang, secondLang, sound }: WordCardProps) => {
+const WordCard = ({ firstLang, secondLang }: WordCardProps) => {
+    const { currentLanguage } = useLanguagesStore();
+    const handleListen = () => {
+        const speech = new SpeechSynthesisUtterance(secondLang);
+        speech.lang = currentLanguage.code;
+
+        console.log(window.speechSynthesis.getVoices());
+        speechSynthesis.speak(speech);
+    };
     return (
         <div className="word-card">
             <div className="first-lang">{firstLang}</div>
             <div className="second-lang">{secondLang}</div>
-            {sound?.length && (
-                <>
-                    {sound.map((s) => (
-                        <WordSound
-                            key={s.type}
-                            type={s.type}
-                            soundLink={s.media}
-                            phonetic={s.phonetic}
-                        />
-                    ))}
-                </>
-            )}
-        </div>
-    );
-};
-const WordSound = ({ type, soundLink, phonetic }: WordSoundProps) => {
-    const audio = useRef<HTMLAudioElement>(null);
-    return (
-        <div className="flex mt-3 justify-center items-center">
+            <div onClick={handleListen}>listen</div>
             <div
-                className="cursor-pointer"
-                onClick={() => audio.current?.play()}
+                className="flex mt-3 justify-center items-center cursor-pointer"
+                onClick={handleListen}
             >
-                <audio
-                    src={soundLink}
-                    controls
-                    className="hidden"
-                    ref={audio}
-                ></audio>
-                <Volume2 />
+                <div className="">
+                    <Volume2 />
+                </div>
+                <span className="inline-block ml-2 font-semibold text-lg">
+                    Listen
+                </span>
             </div>
-            <span className="inline-block ml-2 font-semibold text-lg">
-                {type}
-            </span>
-            <span className="inline-block ml-2  text-lg">{phonetic}</span>
         </div>
     );
 };

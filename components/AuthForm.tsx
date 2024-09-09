@@ -4,6 +4,7 @@ import { signIn, signUp } from "@/lib/actions/user.actions";
 import { authFormSchema } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import { Button } from "./ui/button";
 import { Form } from "./ui/form";
 
 const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
+    const t = useTranslations("Auth");
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,15 +63,9 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
         <section className="auth-form">
             <div className="flex flex-col gap-1 max-md:gap-3">
                 <h1 className="text-4xl lg:text-36 font-semibold text-white">
-                    {user
-                        ? "Link Account"
-                        : type === "sign-in"
-                        ? "Sign In"
-                        : "Sign Up"}
+                    {type === "sign-in" ? t("SignIn") : t("SignUp")}
                     <p className="text-lg font-normal text-slate-400">
-                        {user
-                            ? "Link Your account to get started"
-                            : "Please enter your details."}
+                        {t("desc")}
                     </p>
                 </h1>
                 <Form {...form}>
@@ -80,15 +76,15 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
                         <CustomInput
                             control={form.control}
                             name="email"
-                            label="Email"
-                            placeholder="Enter your email"
+                            label={t("Email")}
+                            placeholder={t("EnterEmail")}
                             type="email"
                         />
                         <CustomInput
                             control={form.control}
                             name="password"
-                            label="Password"
-                            placeholder="Enter your password"
+                            label={t("Password")}
+                            placeholder={t("EnterPassword")}
                             type="password"
                         />
                         <div className="text-red-600 text-xl text-center">
@@ -110,9 +106,9 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
                                         &nbsp;Loading...
                                     </>
                                 ) : type === "sign-in" ? (
-                                    "Sign In"
+                                    t("SignIn")
                                 ) : (
-                                    "Sign Up"
+                                    t("SignUp")
                                 )}
                             </Button>
                         </div>
@@ -120,15 +116,13 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
                 </Form>
                 <footer className="flex justify-center gap-1">
                     <p className="text-14 font-normal text-slate-400">
-                        {type === "sign-in"
-                            ? "Don't have an account?"
-                            : "Already have an account?"}
+                        {type === "sign-in" ? t("NoAccount") : t("HaveAccount")}
                     </p>
                     <Link
                         href={type === "sign-in" ? "/sign-up" : "/sign-in"}
                         className="form-link"
                     >
-                        {type === "sign-in" ? "Sign Up" : "Sign In"}
+                        {type === "sign-in" ? t("SignUp") : t("SignIn")}
                     </Link>
                 </footer>
             </div>
