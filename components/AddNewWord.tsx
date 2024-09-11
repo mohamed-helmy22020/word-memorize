@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import AddNewWordDialog from "./AddNewWordDialog";
+import WordDialog from "./WordDialog";
 
 const AddNewWord = ({
     path,
@@ -20,7 +20,7 @@ const AddNewWord = ({
                     Add Word <PlusIcon />
                 </DialogTrigger>
                 <DialogContent>
-                    <AddNewWordDialog
+                    <WordDialog
                         setOpen={setOpen}
                         path={path}
                         setWords={setWords}

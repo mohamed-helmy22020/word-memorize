@@ -33,16 +33,18 @@ const UserCard = ({ user }: userCardProps) => {
                 </div>
             </div>
             <div className="logout" title={t("LogOut")} onClick={handleLogOut}>
-                {isLoading ? (
-                    <Loader2 size={20} className="animate-spin" />
-                ) : (
-                    <Image
-                        src="/icons/logout.svg"
-                        width="24"
-                        height="24"
-                        alt="logout"
-                    />
-                )}
+                <button>
+                    {isLoading ? (
+                        <Loader2 size={20} className="animate-spin" />
+                    ) : (
+                        <Image
+                            src="/icons/logout.svg"
+                            width="24"
+                            height="24"
+                            alt="logout"
+                        />
+                    )}
+                </button>
             </div>
         </div>
     );

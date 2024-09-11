@@ -167,6 +167,7 @@ export const getPathData = async (
                 Query.equal("languageId", [languageId]),
                 Query.equal("path", [path]),
             ]),
+            Query.limit(10000),
         ]
     );
     const folders: FolderType[] = fetchedFolders.documents.map((folder) => ({
@@ -185,6 +186,7 @@ export const getPathData = async (
                 Query.equal("languageId", [languageId]),
                 Query.equal("path", [path]),
             ]),
+            Query.limit(10000),
         ]
     );
     const words: WordType[] = fetchedWords.documents.map((w) => ({
@@ -304,4 +306,112 @@ export const addNewWord = async (
             $id: promise.$id,
         },
     };
+};
+
+export const deleteDocument = async (
+    type: "folder" | "word",
+    documentId: string
+) => {
+    const user = await getLoggedInUser();
+    const { database } = await createAdminClient();
+
+    const collectionId =
+        type === "folder" ? FOLDERS_COLLECTION_ID : WORDS_COLLECTION_ID;
+    const fetchedData = await database.getDocument(
+        DATABASE_ID!,
+        collectionId!,
+        documentId
+    );
+    let deleted: any = false;
+    console.log(fetchedData);
+    if (fetchedData.userId === user.$id) {
+        await database.deleteDocument(DATABASE_ID!, collectionId!, documentId);
+        console.log(fetchedData);
+        if (type === "folder") {
+            deleteAllSubDir(fetchedData.path, fetchedData.name);
+            deleteAllIncludedWords(fetchedData.path, fetchedData.name);
+        }
+        deleted = true;
+    }
+    return deleted;
+};
+const deleteAllIncludedWords = async (path: string, name: string) => {
+    console.log({ words: `${path}${name}/`.trim().replaceAll(" ", "-") });
+    const { database } = await createAdminClient();
+    const fetchedWords = await database.listDocuments(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        [
+            Query.startsWith(
+                "path",
+                `${path}${name}/`.trim().replaceAll(" ", "-")
+            ),
+        ]
+    );
+    console.log(fetchedWords);
+    fetchedWords.documents.forEach(async (word) => {
+        await database.deleteDocument(
+            DATABASE_ID!,
+            WORDS_COLLECTION_ID!,
+            word.$id
+        );
+    });
+};
+const deleteAllSubDir = async (path: string, name: string) => {
+    console.log({ folders: `${path}${name}/`.trim().replaceAll(" ", "-") });
+
+    const { database } = await createAdminClient();
+    const fetchedFolders = await database.listDocuments(
+        DATABASE_ID!,
+        FOLDERS_COLLECTION_ID!,
+        [
+            Query.startsWith(
+                "path",
+                `${path}${name}/`.trim().replaceAll(" ", "-")
+            ),
+        ]
+    );
+    console.log(fetchedFolders);
+
+    fetchedFolders.documents.forEach(async (folder) => {
+        await database.deleteDocument(
+            DATABASE_ID!,
+            FOLDERS_COLLECTION_ID!,
+            folder.$id
+        );
+    });
+};
+export const editDocument = async (
+    type: "folder" | "word",
+    documentId: string,
+    data: any
+) => {
+    const user = await getLoggedInUser();
+    const { database } = await createAdminClient();
+
+    const collectionId =
+        type === "folder" ? FOLDERS_COLLECTION_ID : WORDS_COLLECTION_ID;
+    const fetchedData = await database.getDocument(
+        DATABASE_ID!,
+        collectionId!,
+        documentId
+    );
+    let edited: { success: boolean; error?: string; data?: any } = {
+        success: false,
+        error: "You are not authorized to edit this document",
+    };
+
+    if (fetchedData.userId === user.$id) {
+        const result = await database.updateDocument(
+            DATABASE_ID!,
+            collectionId!,
+            documentId,
+            data
+        );
+        edited = {
+            success: true,
+            data: { ...data, $id: result.$id },
+        };
+    }
+    return edited;
 };

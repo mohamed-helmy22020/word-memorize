@@ -1,28 +1,30 @@
 "use client";
-import { addNewWord } from "@/lib/actions/user.actions";
+import { addNewWord, editDocument } from "@/lib/actions/user.actions";
 import { useLanguagesStore } from "@/store/userLanguages";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-const AddNewWordDialog = ({
+const WordDialog = ({
     setOpen,
     path,
     setWords,
+    isEdit,
+    wordId,
 }: {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    path: string;
+    path?: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
+    isEdit?: boolean;
+    wordId?: string;
 }) => {
     const { currentLanguage } = useLanguagesStore();
     const [firstLang, setFirstLang] = useState("");
     const [secondLang, setSecondLang] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const router = useRouter();
 
     const handleAddNewWord = async () => {
         setIsLoading(true);
@@ -31,13 +33,40 @@ const AddNewWordDialog = ({
             setError("Please enter word");
             return;
         }
+        if (isEdit) {
+            const editedWord = await editDocument("word", wordId!, {
+                firstLang,
+                secondLang,
+            });
+            if (!editedWord.success) {
+                setError(editedWord.error!);
+                setIsLoading(false);
+                return;
+            }
+            if (editedWord.success) {
+                setWords((prev) => {
+                    return prev.map((word) => {
+                        if (word.$id === wordId) {
+                            return {
+                                ...word,
+                                ...editedWord.data,
+                            };
+                        }
+                        return word;
+                    });
+                });
+            }
+            setOpen(false);
+
+            return;
+        }
+
         const addedWord = await addNewWord(
             firstLang,
             secondLang,
-            path,
+            path!,
             currentLanguage.$id
         );
-        console.log(addNewWord);
         if (addedWord.error) {
             setError(addedWord.error);
             setIsLoading(false);
@@ -51,7 +80,9 @@ const AddNewWordDialog = ({
     return (
         <>
             <DialogHeader>
-                <DialogTitle>Add New Word</DialogTitle>
+                <DialogTitle>
+                    {isEdit ? "Edit Word" : "Add New Word"}
+                </DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-2 items-center space-x-2">
                 <div className="grid flex-1 gap-2 w-full">
@@ -92,6 +123,8 @@ const AddNewWordDialog = ({
                             <Loader2 size={20} className="animate-spin" />
                             &nbsp;Loading...
                         </>
+                    ) : isEdit ? (
+                        "Edit"
                     ) : (
                         "Add"
                     )}
@@ -101,4 +134,4 @@ const AddNewWordDialog = ({
     );
 };
 
-export default AddNewWordDialog;
+export default WordDialog;

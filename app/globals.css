@@ -145,4 +145,31 @@
     .folder {
         @apply w-60 h-14 bg-gray-700 flex items-center rounded-md px-2 overflow-hidden gap-2 text-slate-300 cursor-pointer hover:bg-gray-600 select-none;
     }
+    .CollapsibleContent {
+        overflow: hidden;
+    }
+    .CollapsibleContent[data-state="open"] {
+        animation: slideDown 300ms ease-out;
+    }
+    .CollapsibleContent[data-state="closed"] {
+        animation: slideUp 300ms ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            height: 0;
+        }
+        to {
+            height: var(--radix-collapsible-content-height);
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            height: var(--radix-collapsible-content-height);
+        }
+        to {
+            height: 0;
+        }
+    }
 }

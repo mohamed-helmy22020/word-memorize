@@ -2,13 +2,12 @@
 import { addNewFolder } from "@/lib/actions/user.actions";
 import { useLanguagesStore } from "@/store/userLanguages";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-const AddNewFolderDialog = ({
+const FolderDialog = ({
     setOpen,
     path,
     setFolders,
@@ -18,21 +17,21 @@ const AddNewFolderDialog = ({
     setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 }) => {
     const { currentLanguage } = useLanguagesStore();
-    const [folder, setFolder] = useState("");
+    const [folderName, setFolderName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const router = useRouter();
 
     const handleAddNewFolder = async () => {
         setIsLoading(true);
-        if (folder === "") {
+        if (folderName === "") {
             setIsLoading(false);
-
+            setError("Please enter folder Name");
             return;
         }
+
         const addedFolder = await addNewFolder(
-            folder,
-            path,
+            folderName,
+            path!,
             currentLanguage.$id
         );
         if (addedFolder.error) {
@@ -67,9 +66,9 @@ const AddNewFolderDialog = ({
                     <Input
                         id="folder"
                         className="focus-visible:ring-transparent"
-                        value={folder}
+                        value={folderName}
                         placeholder="Folder Name"
-                        onChange={(e) => setFolder(e.target.value)}
+                        onChange={(e) => setFolderName(e.target.value)}
                     />
                 </div>
             </div>
@@ -95,4 +94,4 @@ const AddNewFolderDialog = ({
     );
 };
 
-export default AddNewFolderDialog;
+export default FolderDialog;

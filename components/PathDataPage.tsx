@@ -21,6 +21,7 @@ const PathDataPage = ({ path, user }: { path: string; user: any }) => {
             const { folders: fetchedFolders, words: fetchedWords } =
                 await getPathData(user.$id, currentLanguage.$id, path);
 
+            console.log({ fetchedFolders, fetchedWords });
             setFolders(fetchedFolders);
             setWords(fetchedWords);
             setisLoading(false);

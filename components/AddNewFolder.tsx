@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import AddNewFolderDialog from "./AddNewFolderDialog";
+import FolderDialog from "./FolderDialog";
 
 const AddNewFolder = ({
     path,
@@ -20,7 +20,7 @@ const AddNewFolder = ({
                     Add Folder <PlusIcon />
                 </DialogTrigger>
                 <DialogContent>
-                    <AddNewFolderDialog
+                    <FolderDialog
                         setOpen={setOpen}
                         path={path}
                         setFolders={setFolders}
