@@ -153,9 +153,41 @@ export const saveDataToCookies = (name: string, data: any) => {
 export const getPathData = async (
     userId: string,
     languageId: string,
-    path: string
+    path: string,
+    getAllWords?: boolean
 ) => {
     const { database } = await createAdminClient();
+
+    const wordsQueriesArray = [
+        Query.equal("userId", [userId]),
+        Query.equal("languageId", [languageId]),
+    ];
+
+    if (getAllWords) {
+        wordsQueriesArray.push(Query.startsWith("path", path));
+    } else {
+        wordsQueriesArray.push(Query.equal("path", path));
+    }
+
+    const fetchedWords = await database.listDocuments(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        [
+            Query.select(["firstLang", "secondLang", "$id", "path"]),
+            Query.and(wordsQueriesArray),
+            Query.limit(10000),
+        ]
+    );
+    const words: WordType[] = fetchedWords.documents.map((w) => ({
+        $id: w.$id,
+        firstLang: w.firstLang,
+        secondLang: w.secondLang,
+        path: w.path,
+    }));
+
+    if (getAllWords) {
+        return { words, folders: [] };
+    }
 
     const fetchedFolders = await database.listDocuments(
         DATABASE_ID!,
@@ -174,25 +206,6 @@ export const getPathData = async (
         name: folder.name,
         path: folder.path,
         $id: folder.$id,
-    }));
-
-    const fetchedWords = await database.listDocuments(
-        DATABASE_ID!,
-        WORDS_COLLECTION_ID!,
-        [
-            Query.select(["firstLang", "secondLang", "$id"]),
-            Query.and([
-                Query.equal("userId", [userId]),
-                Query.equal("languageId", [languageId]),
-                Query.equal("path", [path]),
-            ]),
-            Query.limit(10000),
-        ]
-    );
-    const words: WordType[] = fetchedWords.documents.map((w) => ({
-        $id: w.$id,
-        firstLang: w.firstLang,
-        secondLang: w.secondLang,
     }));
     return { folders, words };
 };
@@ -237,7 +250,6 @@ export const addNewFolder = async (
             userId: user.documents[0].$id,
         }
     );
-    console.log(promise);
 
     if (!promise) return { error: "Error creating folder" };
     return {
@@ -295,7 +307,6 @@ export const addNewWord = async (
             path,
         }
     );
-    console.log(promise);
 
     if (!promise) return { error: "Error creating word" };
     return {
@@ -323,10 +334,8 @@ export const deleteDocument = async (
         documentId
     );
     let deleted: any = false;
-    console.log(fetchedData);
     if (fetchedData.userId === user.$id) {
         await database.deleteDocument(DATABASE_ID!, collectionId!, documentId);
-        console.log(fetchedData);
         if (type === "folder") {
             deleteAllSubDir(fetchedData.path, fetchedData.name);
             deleteAllIncludedWords(fetchedData.path, fetchedData.name);
@@ -336,7 +345,6 @@ export const deleteDocument = async (
     return deleted;
 };
 const deleteAllIncludedWords = async (path: string, name: string) => {
-    console.log({ words: `${path}${name}/`.trim().replaceAll(" ", "-") });
     const { database } = await createAdminClient();
     const fetchedWords = await database.listDocuments(
         DATABASE_ID!,
@@ -348,7 +356,6 @@ const deleteAllIncludedWords = async (path: string, name: string) => {
             ),
         ]
     );
-    console.log(fetchedWords);
     fetchedWords.documents.forEach(async (word) => {
         await database.deleteDocument(
             DATABASE_ID!,
@@ -358,8 +365,6 @@ const deleteAllIncludedWords = async (path: string, name: string) => {
     });
 };
 const deleteAllSubDir = async (path: string, name: string) => {
-    console.log({ folders: `${path}${name}/`.trim().replaceAll(" ", "-") });
-
     const { database } = await createAdminClient();
     const fetchedFolders = await database.listDocuments(
         DATABASE_ID!,
@@ -371,7 +376,6 @@ const deleteAllSubDir = async (path: string, name: string) => {
             ),
         ]
     );
-    console.log(fetchedFolders);
 
     fetchedFolders.documents.forEach(async (folder) => {
         await database.deleteDocument(

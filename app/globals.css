@@ -140,7 +140,7 @@
     }
     .folders-container,
     .words-container {
-        @apply h-full flex flex-wrap flex-col w-full h-fit;
+        @apply flex flex-wrap flex-col w-full h-fit;
     }
     .folder {
         @apply w-60 h-14 bg-gray-700 flex items-center rounded-md px-2 overflow-hidden gap-2 text-slate-300 cursor-pointer hover:bg-gray-600 select-none;

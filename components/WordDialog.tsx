@@ -12,29 +12,30 @@ const WordDialog = ({
     path,
     setWords,
     isEdit,
-    wordId,
+    word,
 }: {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     path?: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
     isEdit?: boolean;
-    wordId?: string;
+    word?: WordType;
 }) => {
     const { currentLanguage } = useLanguagesStore();
-    const [firstLang, setFirstLang] = useState("");
-    const [secondLang, setSecondLang] = useState("");
+    const [firstLang, setFirstLang] = useState(word ? word.firstLang : "");
+    const [secondLang, setSecondLang] = useState(word ? word.secondLang : "");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
     const handleAddNewWord = async () => {
         setIsLoading(true);
+
         if (firstLang.trim() === "" || secondLang.trim() === "") {
             setIsLoading(false);
             setError("Please enter word");
             return;
         }
         if (isEdit) {
-            const editedWord = await editDocument("word", wordId!, {
+            const editedWord = await editDocument("word", word?.$id!, {
                 firstLang,
                 secondLang,
             });
@@ -45,14 +46,14 @@ const WordDialog = ({
             }
             if (editedWord.success) {
                 setWords((prev) => {
-                    return prev.map((word) => {
-                        if (word.$id === wordId) {
+                    return prev.map((w) => {
+                        if (w.$id === word?.$id) {
                             return {
-                                ...word,
+                                ...w,
                                 ...editedWord.data,
                             };
                         }
-                        return word;
+                        return w;
                     });
                 });
             }
@@ -94,7 +95,8 @@ const WordDialog = ({
                         className="focus-visible:ring-transparent"
                         value={firstLang}
                         placeholder="First Language"
-                        onChange={(e) => setFirstLang(e.target.value.trim())}
+                        onChange={(e) => setFirstLang(e.target.value)}
+                        onBlur={(e) => setFirstLang(e.target.value.trim())}
                     />
                 </div>
                 <div className="grid flex-1 gap-2  w-full">
@@ -106,7 +108,8 @@ const WordDialog = ({
                         className="focus-visible:ring-transparent"
                         value={secondLang}
                         placeholder="Second Language"
-                        onChange={(e) => setSecondLang(e.target.value.trim())}
+                        onChange={(e) => setSecondLang(e.target.value)}
+                        onBlur={(e) => setSecondLang(e.target.value.trim())}
                     />
                 </div>
             </div>

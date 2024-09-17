@@ -22,10 +22,11 @@ const WordCard = ({
     const { currentLanguage } = useLanguagesStore();
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const handleListen = () => {
+        console.log(speechSynthesis.cancel());
         const speech = new SpeechSynthesisUtterance(word.secondLang);
-        speech.lang = currentLanguage.code;
 
-        console.log(window.speechSynthesis.getVoices());
+        speech.lang = currentLanguage.code;
+        speech.rate = 0.8;
         speechSynthesis.speak(speech);
     };
 
@@ -48,7 +49,7 @@ const WordCard = ({
                     <DialogContent>
                         <WordDialog
                             isEdit
-                            wordId={word.$id}
+                            word={word}
                             setOpen={setEditDialogOpen}
                             setWords={setWords}
                         />
@@ -57,7 +58,6 @@ const WordCard = ({
                 <div className="word-card">
                     <div className="first-lang">{word.firstLang}</div>
                     <div className="second-lang">{word.secondLang}</div>
-                    <div onClick={handleListen}>listen</div>
                     <div
                         className="flex mt-3 justify-center items-center cursor-pointer"
                         onClick={handleListen}

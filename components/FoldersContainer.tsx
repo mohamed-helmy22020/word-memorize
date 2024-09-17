@@ -8,6 +8,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import AddNewFolder from "./AddNewFolder";
 import Folder from "./Folder";
+import { Badge } from "./ui/badge";
 
 const FoldersContainer = ({
     folders,
@@ -28,7 +29,7 @@ const FoldersContainer = ({
                 <CollapsibleTrigger>
                     <div className="font-semibold mb-2 flex gap-2 hover:bg-slate-400 rounded-sm p-1 pr-2">
                         {isCollapsibleOpen ? <ChevronDown /> : <ChevronRight />}{" "}
-                        Folders
+                        Folders<Badge variant="default">{folders.length}</Badge>
                     </div>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="CollapsibleContent">

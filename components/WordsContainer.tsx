@@ -2,43 +2,54 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import AddNewWord from "./AddNewWord";
+import { Badge } from "./ui/badge";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "./ui/collapsible";
 import WordCard from "./WordCard";
+import WordsWithPath from "./WordsWithPath";
 
 const WordsContainer = ({
     words,
     path,
     setWords,
+    showPaths,
+    showAllWords,
 }: {
     words: WordType[];
     path: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
+    showPaths: boolean;
+    showAllWords: boolean;
 }) => {
     const [isOpen, setIsOpen] = useState(true);
     return (
         <div className="words-container">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger>
-                    <div className="font-semibold mb-2 flex gap-2 hover:bg-slate-400 rounded-sm p-1 pr-2">
+                    <div className="flex justify-center items-center font-semibold mb-2  gap-2 hover:bg-slate-400 rounded-sm p-1 pr-2">
                         {isOpen ? <ChevronDown /> : <ChevronRight />} Words
+                        <Badge variant="default">{words.length}</Badge>
                     </div>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="CollapsibleContent">
-                    <div className="flex flex-wrap flex-1  gap-3">
-                        {words.map((w) => {
-                            return (
-                                <WordCard
-                                    setWords={setWords}
-                                    key={w.$id}
-                                    word={w}
-                                />
-                            );
-                        })}
-                    </div>
+                    {showPaths && showAllWords ? (
+                        <WordsWithPath words={words} setWords={setWords} />
+                    ) : (
+                        <div className="flex flex-wrap flex-1  gap-3">
+                            {words.map((w) => {
+                                return (
+                                    <WordCard
+                                        setWords={setWords}
+                                        key={w.$id}
+                                        word={w}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
                 </CollapsibleContent>
                 <AddNewWord path={path} setWords={setWords} />
             </Collapsible>

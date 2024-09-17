@@ -15,7 +15,7 @@ const UserCard = ({ user }: userCardProps) => {
         if (isLoading) return;
         setIsLoading(true);
         await logoutAccount();
-        localStorage.clear();
+        sessionStorage.clear();
         router.push("/sign-in");
     };
     return (

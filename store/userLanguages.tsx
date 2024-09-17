@@ -17,7 +17,7 @@ export const useLanguagesStore = create<languagesStateType>((set) => ({
         $id: "",
     },
     changeCurrentLanguage: (language: LanguageType) => {
-        localStorage.setItem("currentLanguage", JSON.stringify(language));
+        sessionStorage.setItem("currentLanguage", JSON.stringify(language));
         saveDataToCookies("currentLanguage", language.$id);
         set(
             produce((state: languagesStateType) => {

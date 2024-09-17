@@ -29,6 +29,12 @@ const FolderDialog = ({
             return;
         }
 
+        if (/[^a-zA-Z0-9\s]/.test(folderName)) {
+            setIsLoading(false);
+            setError("Folder Name shouldn't have special chars");
+            return;
+        }
+
         const addedFolder = await addNewFolder(
             folderName,
             path!,

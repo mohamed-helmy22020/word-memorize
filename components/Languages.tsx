@@ -27,8 +27,8 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
         );
         let currentLanguage = { name: "", code: "", $id: "" };
         try {
-            currentLanguage = localStorage.getItem("currentLanguage")
-                ? JSON.parse(localStorage.getItem("currentLanguage")!)
+            currentLanguage = sessionStorage.getItem("currentLanguage")
+                ? JSON.parse(sessionStorage.getItem("currentLanguage")!)
                 : "";
         } catch (e) {
             console.log(e);

@@ -77,4 +77,5 @@ declare interface WordType {
     firstLang: string;
     secondLang: string;
     $id: string;
+    path: string;
 }
