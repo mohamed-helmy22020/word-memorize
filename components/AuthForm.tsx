@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import z from "zod";
 import CustomInput from "./CustomInput";
 import { Button } from "./ui/button";
 import { Form } from "./ui/form";

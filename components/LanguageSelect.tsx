@@ -18,7 +18,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, languagesArray } from "@/lib/utils";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 
 interface Lang {
     name: string;

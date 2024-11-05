@@ -10,6 +10,20 @@ const {
     APPWRITE_WORDS_COLLECTION_ID: WORDS_COLLECTION_ID,
 } = process.env;
 
+export async function getLoggedInUser() {
+    try {
+        const { account } = await createSessionClient();
+        const result = await account.get();
+
+        const user = await getUserInfo({ userId: result.$id });
+
+        return parseStringify(user);
+    } catch (error: any) {
+        console.log({ e3: error.message });
+        return null;
+    }
+}
+
 export const getUserInfo = async ({ userId }: getUserInfoProps) => {
     try {
         const { database } = await createAdminClient();
@@ -21,7 +35,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
         );
         return parseStringify(user.documents[0]);
     } catch (error) {
-        console.log(error);
+        console.log({ e2: error });
     }
 };
 
@@ -32,12 +46,10 @@ export const signIn = async ({ email, password }: signInProps) => {
             email,
             password
         );
-
         cookies().set("appwrite-session", session.secret, {
             path: "/",
             httpOnly: true,
             sameSite: "strict",
-            secure: true,
         });
 
         const user = await getUserInfo({ userId: session.userId });
@@ -94,20 +106,6 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
     }
 };
 
-export async function getLoggedInUser() {
-    try {
-        const { account } = await createSessionClient();
-        const result = await account.get();
-
-        const user = await getUserInfo({ userId: result.$id });
-
-        return parseStringify(user);
-    } catch (error: any) {
-        console.log(error.message);
-        return null;
-    }
-}
-
 export const logoutAccount = async () => {
     try {
         const { account } = await createSessionClient();
@@ -122,20 +120,13 @@ export const logoutAccount = async () => {
 
 export const addNewLang = async (lang: { name: string; code: string }) => {
     const { database } = await createAdminClient();
-    const { account } = await createSessionClient();
-    const result = await account.get();
-
-    const user = await database.listDocuments(
-        DATABASE_ID!,
-        USER_COLLECTION_ID!,
-        [Query.equal("id", [result.targets[0].userId])]
-    );
-    const { languages } = user.documents[0];
+    const user = await getLoggedInUser();
+    const { languages } = user;
     languages.push(lang);
     const a = await database.updateDocument(
         DATABASE_ID!,
         USER_COLLECTION_ID!,
-        user.documents[0].$id,
+        user.$id,
         {
             languages: [...languages],
         }
@@ -145,25 +136,21 @@ export const addNewLang = async (lang: { name: string; code: string }) => {
         $id: a.languages[a.languages.length - 1].$id,
     };
 };
-
-export const saveDataToCookies = (name: string, data: any) => {
-    cookies().set(name, data);
-};
-
 export const getPathData = async (
-    userId: string,
     languageId: string,
     path: string,
-    getAllWords?: boolean
+    showAllWords?: boolean
 ) => {
     const { database } = await createAdminClient();
+    const user = await getLoggedInUser();
+    const userId = user.$id;
 
     const wordsQueriesArray = [
         Query.equal("userId", [userId]),
         Query.equal("languageId", [languageId]),
     ];
 
-    if (getAllWords) {
+    if (showAllWords) {
         wordsQueriesArray.push(Query.startsWith("path", path));
     } else {
         wordsQueriesArray.push(Query.equal("path", path));
@@ -175,7 +162,7 @@ export const getPathData = async (
         [
             Query.select(["firstLang", "secondLang", "$id", "path"]),
             Query.and(wordsQueriesArray),
-            Query.limit(10000),
+            Query.limit(100000000),
         ]
     );
     const words: WordType[] = fetchedWords.documents.map((w) => ({
@@ -185,7 +172,7 @@ export const getPathData = async (
         path: w.path,
     }));
 
-    if (getAllWords) {
+    if (showAllWords) {
         return { words, folders: [] };
     }
 
@@ -199,7 +186,7 @@ export const getPathData = async (
                 Query.equal("languageId", [languageId]),
                 Query.equal("path", [path]),
             ]),
-            Query.limit(10000),
+            Query.limit(100000000),
         ]
     );
     const folders: FolderType[] = fetchedFolders.documents.map((folder) => ({
@@ -216,20 +203,13 @@ export const addNewFolder = async (
     languageId: string
 ) => {
     const { database } = await createAdminClient();
-    const { account } = await createSessionClient();
-    const result = await account.get();
-
-    const user = await database.listDocuments(
-        DATABASE_ID!,
-        USER_COLLECTION_ID!,
-        [Query.equal("id", [result.targets[0].userId])]
-    );
+    const user = await getLoggedInUser();
     const fetchedFolders = await database.listDocuments(
         DATABASE_ID!,
         FOLDERS_COLLECTION_ID!,
         [
             Query.and([
-                Query.equal("userId", [user.documents[0].$id]),
+                Query.equal("userId", [user.$id]),
                 Query.equal("languageId", [languageId]),
                 Query.equal("path", [path]),
                 Query.equal("name", [name]),
@@ -247,7 +227,7 @@ export const addNewFolder = async (
             name,
             path,
             languageId,
-            userId: user.documents[0].$id,
+            userId: user.$id,
         }
     );
 
@@ -258,7 +238,7 @@ export const addNewFolder = async (
             name,
             path,
             languageId,
-            userId: user.documents[0].$id,
+            userId: user.$id,
             $id: promise.$id,
         },
     };
@@ -271,20 +251,13 @@ export const addNewWord = async (
     languageId: string
 ) => {
     const { database } = await createAdminClient();
-    const { account } = await createSessionClient();
-    const result = await account.get();
-
-    const user = await database.listDocuments(
-        DATABASE_ID!,
-        USER_COLLECTION_ID!,
-        [Query.equal("id", [result.targets[0].userId])]
-    );
+    const user = await getLoggedInUser();
     const fetchedWords = await database.listDocuments(
         DATABASE_ID!,
         WORDS_COLLECTION_ID!,
         [
             Query.and([
-                Query.equal("userId", [user.documents[0].$id]),
+                Query.equal("userId", [user.$id]),
                 Query.equal("languageId", [languageId]),
                 Query.equal("path", [path]),
                 Query.equal("firstLang", [firstLang]),
@@ -293,7 +266,7 @@ export const addNewWord = async (
         ]
     );
     if (fetchedWords.documents.length >= 1)
-        return { error: "Word already exists" };
+        return { success: false, error: "Word already exists" };
 
     const promise = await database.createDocument(
         DATABASE_ID!,
@@ -302,19 +275,20 @@ export const addNewWord = async (
         {
             firstLang,
             secondLang,
-            userId: user.documents[0].$id,
+            userId: user.$id,
             languageId,
             path,
         }
     );
 
-    if (!promise) return { error: "Error creating word" };
+    if (!promise) return { success: false, error: "Error creating word" };
     return {
         success: true,
         newWord: {
             firstLang,
             secondLang,
             $id: promise.$id,
+            path,
         },
     };
 };
@@ -418,4 +392,44 @@ export const editDocument = async (
         };
     }
     return edited;
+};
+
+export const getTestWords = async (
+    languageId: string,
+    path: string,
+    showAllWords?: boolean
+) => {
+    const { database } = await createAdminClient();
+    const user = await getLoggedInUser();
+    const userId = user.$id;
+
+    const wordsQueriesArray = [
+        Query.equal("userId", [userId]),
+        Query.equal("languageId", [languageId]),
+    ];
+
+    if (showAllWords) {
+        wordsQueriesArray.push(Query.startsWith("path", path));
+    } else {
+        wordsQueriesArray.push(Query.equal("path", path));
+    }
+
+    const fetchedWords = await database.listDocuments(
+        DATABASE_ID!,
+        WORDS_COLLECTION_ID!,
+        [
+            Query.select(["firstLang", "secondLang", "$id", "path"]),
+            Query.and(wordsQueriesArray),
+            Query.limit(100000000),
+        ]
+    );
+    const words: WordTestType[] = fetchedWords.documents.map((w) => ({
+        $id: w.$id,
+        firstLang: w.firstLang,
+        secondLang: w.secondLang,
+        path: w.path,
+        isCorrect: false,
+        isSolved: false,
+    }));
+    return words;
 };

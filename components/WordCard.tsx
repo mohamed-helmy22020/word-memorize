@@ -6,7 +6,7 @@ import {
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { deleteDocument } from "@/lib/actions/user.actions";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Volume2 } from "lucide-react";
 import { useState } from "react";
 import WordDialog from "./WordDialog";
@@ -22,7 +22,6 @@ const WordCard = ({
     const { currentLanguage } = useLanguagesStore();
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const handleListen = () => {
-        console.log(speechSynthesis.cancel());
         const speech = new SpeechSynthesisUtterance(word.secondLang);
 
         speech.lang = currentLanguage.code;
@@ -55,7 +54,7 @@ const WordCard = ({
                         />
                     </DialogContent>
                 </Dialog>
-                <div className="word-card">
+                <div className="data-card">
                     <div className="first-lang">{word.firstLang}</div>
                     <div className="second-lang">{word.secondLang}</div>
                     <div

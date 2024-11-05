@@ -5,10 +5,8 @@ import { useState } from "react";
 import WordDialog from "./WordDialog";
 
 const AddNewWord = ({
-    path,
     setWords,
 }: {
-    path: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
 }) => {
     const [open, setOpen] = useState(false);
@@ -20,11 +18,7 @@ const AddNewWord = ({
                     Add Word <PlusIcon />
                 </DialogTrigger>
                 <DialogContent>
-                    <WordDialog
-                        setOpen={setOpen}
-                        path={path}
-                        setWords={setWords}
-                    />
+                    <WordDialog setOpen={setOpen} setWords={setWords} />
                 </DialogContent>
             </Dialog>
         </div>

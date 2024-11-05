@@ -13,13 +13,11 @@ import WordsWithPath from "./WordsWithPath";
 
 const WordsContainer = ({
     words,
-    path,
     setWords,
     showPaths,
     showAllWords,
 }: {
     words: WordType[];
-    path: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
     showPaths: boolean;
     showAllWords: boolean;
@@ -51,7 +49,7 @@ const WordsContainer = ({
                         </div>
                     )}
                 </CollapsibleContent>
-                <AddNewWord path={path} setWords={setWords} />
+                <AddNewWord setWords={setWords} />
             </Collapsible>
         </div>
     );

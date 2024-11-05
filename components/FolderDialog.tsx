@@ -1,25 +1,25 @@
 "use client";
 import { addNewFolder } from "@/lib/actions/user.actions";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { usePathNameStore } from "@/store/pathnameStore";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 const FolderDialog = ({
     setOpen,
-    path,
     setFolders,
 }: {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    path: string;
     setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 }) => {
     const { currentLanguage } = useLanguagesStore();
     const [folderName, setFolderName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const { pathName: path } = usePathNameStore();
 
     const handleAddNewFolder = async () => {
         setIsLoading(true);
@@ -59,6 +59,10 @@ const FolderDialog = ({
         }
         setOpen(false);
     };
+    useEffect(() => {
+        console.log(path);
+    }, [path]);
+
     return (
         <>
             <DialogHeader>

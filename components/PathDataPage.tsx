@@ -3,12 +3,14 @@ import FoldersContainer from "@/components/FoldersContainer";
 import LoadingComponent from "@/components/LoadingComponent";
 import WordsContainer from "@/components/WordsContainer";
 import { getPathData } from "@/lib/actions/user.actions";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { usePathNameStore } from "@/store/pathnameStore";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { useEffect, useState } from "react";
 import Languages from "./Languages";
 import OptionsBar from "./OptionsBar";
+import ToTopButton from "./ToTopButton";
 
-const PathDataPage = ({ path, user }: { path: string; user: any }) => {
+const PathDataPage = ({ path, user }: { path: string; user: User }) => {
     const [folders, setFolders] = useState<FolderType[]>([]);
     const [words, setWords] = useState<WordType[]>([]);
     const [IsLoading, setisLoading] = useState<boolean>(true);
@@ -16,37 +18,29 @@ const PathDataPage = ({ path, user }: { path: string; user: any }) => {
     const [showPaths, setShowPaths] = useState<boolean>(false);
 
     const { currentLanguage } = useLanguagesStore();
+    const { setPathName } = usePathNameStore();
 
     useEffect(() => {
-        if (!currentLanguage.$id) return;
+        setPathName(path);
+    }, [path]);
 
-        const fetchAllWords = async () => {
-            setisLoading(true);
-            const { words: fetchedWords } = await getPathData(
-                user.$id,
-                currentLanguage.$id,
-                path,
-                showAllWords
-            );
-            setWords(fetchedWords);
+    useEffect(() => {
+        if (!currentLanguage.$id) {
             setisLoading(false);
-        };
-        if (showAllWords) {
-            fetchAllWords();
             return;
         }
-
         const fetchData = async () => {
             setisLoading(true);
             const { folders: fetchedFolders, words: fetchedWords } =
-                await getPathData(user.$id, currentLanguage.$id, path);
+                await getPathData(currentLanguage.$id, path, showAllWords);
 
             setFolders(fetchedFolders);
             setWords(fetchedWords);
             setisLoading(false);
         };
         fetchData();
-    }, [currentLanguage.$id, path, user.$id, showAllWords]);
+    }, [currentLanguage.$id, path, showAllWords]);
+
     useEffect(() => {
         if (showPaths) {
             setWords((prev) => {
@@ -82,21 +76,18 @@ const PathDataPage = ({ path, user }: { path: string; user: any }) => {
                 setShowAllWords={setShowAllWords}
                 setShowPaths={setShowPaths}
                 showPaths={showPaths}
+                words={words}
             />
             {!showAllWords && (
-                <FoldersContainer
-                    folders={folders}
-                    path={path}
-                    setFolders={setFolders}
-                />
+                <FoldersContainer folders={folders} setFolders={setFolders} />
             )}
             <WordsContainer
                 words={words}
-                path={path}
                 setWords={setWords}
                 showPaths={showPaths}
                 showAllWords={showAllWords}
             />
+            <ToTopButton />
         </div>
     );
 };

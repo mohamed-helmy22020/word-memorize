@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: "Word Memorizing",
     description: "app to help you to memorize word",
     icons: {
-        icon: "/favicon.png",
+        icon: "/favicon.ico",
     },
 };
 export default async function LocaleLayout({

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import React from "react";
 import WordCard from "./WordCard";
 
 type Props = {
@@ -22,13 +23,13 @@ const WordsWithPath = ({ words, setWords }: Props) => {
     return (
         <div className="flex flex-col gap-5">
             {newWordsArray.map((wordsGroup, i) => (
-                <>
+                <React.Fragment key={i}>
                     <div className="text-2xl font-bold">
                         <Link href={wordsGroup[0].path}>
-                            {wordsGroup[0].path}
+                            {wordsGroup[0].path.replaceAll("-", " ")}
                         </Link>
                     </div>
-                    <div className="flex flex-wrap flex-1  gap-3" key={i}>
+                    <div className="flex flex-wrap flex-1  gap-3">
                         {wordsGroup.map((w) => {
                             return (
                                 <WordCard
@@ -39,7 +40,7 @@ const WordsWithPath = ({ words, setWords }: Props) => {
                             );
                         })}
                     </div>
-                </>
+                </React.Fragment>
             ))}
         </div>
     );

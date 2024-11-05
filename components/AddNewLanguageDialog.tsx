@@ -1,5 +1,5 @@
 "use client";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

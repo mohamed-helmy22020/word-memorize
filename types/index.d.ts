@@ -73,9 +73,30 @@ declare interface FolderType {
     $id: string;
 }
 
+declare type TestType = {
+    score: number;
+    id: string;
+    path: string;
+    isFinished: boolean;
+    wordsLength: number;
+    date: number;
+    includeSubdirs: boolean;
+    showItems: {
+        firstLang: boolean;
+        secondLang: boolean;
+        voice: boolean;
+    };
+    words: WordTestType[];
+};
+
 declare interface WordType {
     firstLang: string;
     secondLang: string;
     $id: string;
     path: string;
+}
+declare interface WordTestType extends WordType {
+    isCorrect: boolean;
+    isSolved: boolean;
+    answer?: string;
 }

@@ -1,5 +1,6 @@
 "use client";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { useSideBarStore } from "@/store/sideBarStore";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
@@ -9,6 +10,7 @@ import Language from "./Language";
 const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
     const t = useTranslations("Languages");
     const router = useRouter();
+    const { setShow } = useSideBarStore();
 
     const {
         languages: allLanguages,
@@ -31,7 +33,7 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
                 ? JSON.parse(sessionStorage.getItem("currentLanguage")!)
                 : "";
         } catch (e) {
-            console.log(e);
+            console.log({ e1: e });
         }
 
         changeCurrentLanguage(currentLanguage);
@@ -46,6 +48,7 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
                     name={lang.name}
                     isCurrentLanguage={lang.$id === currentLanguage.$id}
                     handleClick={() => {
+                        setShow(false);
                         changeCurrentLanguage(lang);
                         router.push("/");
                     }}

@@ -1,6 +1,4 @@
 import FoldersBreadcrumb from "@/components/FoldersBreadcrumb";
-import { Suspense } from "react";
-import Loading from "./loading";
 
 const Layout = async ({
     children,
@@ -13,7 +11,7 @@ const Layout = async ({
         <>
             <div className="flex flex-col flex-wrap flex-1 h-fit overflow-auto p-5 gap-7 ">
                 <FoldersBreadcrumb path={params.path} />
-                <Suspense fallback={<Loading />}>{children}</Suspense>
+                {children}
             </div>
         </>
     );

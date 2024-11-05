@@ -12,11 +12,9 @@ import { Badge } from "./ui/badge";
 
 const FoldersContainer = ({
     folders,
-    path,
     setFolders,
 }: {
     folders: FolderType[];
-    path: string;
     setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 }) => {
     const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(true);
@@ -49,7 +47,7 @@ const FoldersContainer = ({
                         })}
                     </div>
                 </CollapsibleContent>
-                <AddNewFolder path={path} setFolders={setFolders} />
+                <AddNewFolder setFolders={setFolders} />
             </Collapsible>
         </div>
     );

@@ -5,10 +5,8 @@ import { useState } from "react";
 import FolderDialog from "./FolderDialog";
 
 const AddNewFolder = ({
-    path,
     setFolders,
 }: {
-    path: string;
     setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 }) => {
     const [open, setOpen] = useState(false);
@@ -20,11 +18,7 @@ const AddNewFolder = ({
                     Add Folder <PlusIcon />
                 </DialogTrigger>
                 <DialogContent>
-                    <FolderDialog
-                        setOpen={setOpen}
-                        path={path}
-                        setFolders={setFolders}
-                    />
+                    <FolderDialog setOpen={setOpen} setFolders={setFolders} />
                 </DialogContent>
             </Dialog>
         </div>

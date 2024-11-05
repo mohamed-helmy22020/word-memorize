@@ -1,6 +1,7 @@
 "use client";
 import { addNewWord, editDocument } from "@/lib/actions/user.actions";
-import { useLanguagesStore } from "@/store/userLanguages";
+import { usePathNameStore } from "@/store/pathnameStore";
+import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
@@ -9,13 +10,11 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 const WordDialog = ({
     setOpen,
-    path,
     setWords,
     isEdit,
     word,
 }: {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    path?: string;
     setWords: React.Dispatch<React.SetStateAction<WordType[]>>;
     isEdit?: boolean;
     word?: WordType;
@@ -25,6 +24,7 @@ const WordDialog = ({
     const [secondLang, setSecondLang] = useState(word ? word.secondLang : "");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const { pathName: path } = usePathNameStore();
 
     const handleAddNewWord = async () => {
         setIsLoading(true);
@@ -73,7 +73,7 @@ const WordDialog = ({
             setIsLoading(false);
             return;
         }
-        if (addedWord.success) {
+        if (addedWord.success && addedWord.newWord) {
             setWords((prev) => [...prev, addedWord.newWord]);
         }
         setOpen(false);
