@@ -37,7 +37,7 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
         }
 
         changeCurrentLanguage(currentLanguage);
-    }, []);
+    }, [changeCurrentLanguage, setLangs, userLangs]);
 
     return (
         <div className="languages">

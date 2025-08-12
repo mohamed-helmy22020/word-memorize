@@ -22,7 +22,7 @@ const PathDataPage = ({ path, user }: { path: string; user: User }) => {
 
     useEffect(() => {
         setPathName(path);
-    }, [path]);
+    }, [path, setPathName]);
 
     useEffect(() => {
         if (!currentLanguage.$id) {

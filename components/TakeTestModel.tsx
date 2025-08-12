@@ -45,17 +45,6 @@ const TakeTest = ({}: Props) => {
         setShowItems((prev) => ({ ...prev, [id]: checked }));
     };
 
-    const getWords = async () => {
-        setIsFetchLoading(true);
-        const testWords = await getTestWords(
-            currentLanguage.$id,
-            path,
-            includeSubdirs
-        );
-        setWords(testWords);
-        setIsFetchLoading(false);
-    };
-
     const handleTakeTest = async () => {
         setError("");
         setIsTestLoading(true);
@@ -92,10 +81,20 @@ const TakeTest = ({}: Props) => {
         router.push(`/take_test?testId=${id}`);
     };
     useEffect(() => {
+        const getWords = async () => {
+            setIsFetchLoading(true);
+            const testWords = await getTestWords(
+                currentLanguage.$id,
+                path,
+                includeSubdirs
+            );
+            setWords(testWords);
+            setIsFetchLoading(false);
+        };
         if (isModelOpen) {
             getWords();
         }
-    }, [includeSubdirs, isModelOpen]);
+    }, [includeSubdirs, isModelOpen, currentLanguage.$id, path]);
     return (
         <Dialog modal={isModelOpen} onOpenChange={setIsModelOpen}>
             <DialogTrigger asChild>

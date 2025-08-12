@@ -1,0 +1,9 @@
+{
+    "i18n-ally.localesPaths": [
+        "i18n",
+        "messages",
+        "node_modules2/axe-core/locales",
+        "node_modules2/eslint/messages",
+        "node_modules2/zod/lib/locales"
+    ]
+}

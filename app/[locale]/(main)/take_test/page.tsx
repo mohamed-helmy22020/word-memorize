@@ -15,7 +15,7 @@ const TakeTestPage = () => {
     const willChange = useWillChange();
     const router = useRouter();
 
-    const testId = useSearchParams().get("testId");
+    const testId = useSearchParams()?.get("testId");
     const [tests, currentTest, finishTest, setTestWord] = useTakeTestsStore(
         (state) => [
             state.tests,
@@ -31,7 +31,7 @@ const TakeTestPage = () => {
 
     useEffect(() => {
         setAnswer(testWords?.[currentWordIndex].answer || "");
-    }, [currentWordIndex || testWords]);
+    }, [testWords, currentWordIndex]);
 
     const handleSubmit = () => {
         if (answer.trim() === "") return;
@@ -52,7 +52,7 @@ const TakeTestPage = () => {
 
     useEffect(() => {
         console.log({ testWords, currentTest, tests });
-    }, [currentTest, tests]);
+    }, [currentTest, tests, testWords]);
 
     if (tests?.length !== undefined && tests.length === 0) {
         redirect("/");
