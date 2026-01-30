@@ -92,6 +92,7 @@ declare type TestType = {
 declare interface WordType {
     firstLang: string;
     secondLang: string;
+    desc?: string;
     $id: string;
     path: string;
 }
@@ -100,3 +101,5 @@ declare interface WordTestType extends WordType {
     isSolved: boolean;
     answer?: string;
 }
+
+type TranslationTypes = "ai" | "translate";

@@ -4,17 +4,19 @@ import { routing } from "./i18n/routing";
 export default createMiddleware(routing);
 
 export const config = {
-    // Match only internationalized pathnames
     matcher: [
-        // Enable a redirect to a matching locale at the root
+        // Match root
         "/",
 
-        // Set a cookie to remember the previous locale for
-        // all requests that have a locale prefix
+        // Match locale-prefixed paths (e.g., /en/dashboard)
         "/(de|en)/:path*",
 
-        // Enable redirects that add missing locales
-        // (e.g. `/pathnames` -> `/en/pathnames`)
-        "/((?!_next|_vercel|.*\\..*).*)",
+        // Match non-API, non-static-asset paths to redirect to a locale
+        // Excludes:
+        //   - /api/... (API routes)
+        //   - /_next/... (Next.js internals)
+        //   - /_vercel/... (Vercel internals)
+        //   - files with extensions (e.g., .png, .js, etc.)
+        "/((?!api|_next|_vercel|.*\\..*).*)",
     ],
 };

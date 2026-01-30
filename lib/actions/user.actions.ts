@@ -31,7 +31,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
         const user = await database.listDocuments(
             DATABASE_ID!,
             USER_COLLECTION_ID!,
-            [Query.equal("id", [userId])]
+            [Query.equal("id", [userId])],
         );
         return parseStringify(user.documents[0]);
     } catch (error) {
@@ -44,7 +44,7 @@ export const signIn = async ({ email, password }: signInProps) => {
         const { account } = await createAdminClient();
         const session = await account.createEmailPasswordSession(
             email,
-            password
+            password,
         );
         cookies().set("appwrite-session", session.secret, {
             path: "/",
@@ -72,7 +72,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
             ID.unique(),
             email,
             password,
-            name
+            name,
         );
 
         if (!newUserAccount) throw new Error("Error creating user");
@@ -85,12 +85,12 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
                 id: newUserAccount.$id,
                 email,
                 name,
-            }
+            },
         );
 
         const session = await account.createEmailPasswordSession(
             email,
-            password
+            password,
         );
 
         cookies().set("appwrite-session", session.secret, {
@@ -129,7 +129,7 @@ export const addNewLang = async (lang: { name: string; code: string }) => {
         user.$id,
         {
             languages: [...languages],
-        }
+        },
     );
     return {
         ...lang,
@@ -139,7 +139,7 @@ export const addNewLang = async (lang: { name: string; code: string }) => {
 export const getPathData = async (
     languageId: string,
     path: string,
-    showAllWords?: boolean
+    showAllWords?: boolean,
 ) => {
     const { database } = await createAdminClient();
     const user = await getLoggedInUser();
@@ -160,15 +160,16 @@ export const getPathData = async (
         DATABASE_ID!,
         WORDS_COLLECTION_ID!,
         [
-            Query.select(["firstLang", "secondLang", "$id", "path"]),
+            Query.select(["firstLang", "secondLang", "desc", "$id", "path"]),
             Query.and(wordsQueriesArray),
             Query.limit(100000000),
-        ]
+        ],
     );
     const words: WordType[] = fetchedWords.documents.map((w) => ({
         $id: w.$id,
         firstLang: w.firstLang,
         secondLang: w.secondLang,
+        desc: w.desc,
         path: w.path,
     }));
 
@@ -187,7 +188,7 @@ export const getPathData = async (
                 Query.equal("path", [path]),
             ]),
             Query.limit(100000000),
-        ]
+        ],
     );
     const folders: FolderType[] = fetchedFolders.documents.map((folder) => ({
         name: folder.name,
@@ -200,7 +201,7 @@ export const getPathData = async (
 export const addNewFolder = async (
     name: string,
     path: string,
-    languageId: string
+    languageId: string,
 ) => {
     const { database } = await createAdminClient();
     const user = await getLoggedInUser();
@@ -214,7 +215,7 @@ export const addNewFolder = async (
                 Query.equal("path", [path]),
                 Query.equal("name", [name]),
             ]),
-        ]
+        ],
     );
     if (fetchedFolders.documents.length >= 1)
         return { error: "Folder already exists" };
@@ -228,7 +229,7 @@ export const addNewFolder = async (
             path,
             languageId,
             userId: user.$id,
-        }
+        },
     );
 
     if (!promise) return { error: "Error creating folder" };
@@ -247,8 +248,9 @@ export const addNewFolder = async (
 export const addNewWord = async (
     firstLang: string,
     secondLang: string,
+    desc: string,
     path: string,
-    languageId: string
+    languageId: string,
 ) => {
     const { database } = await createAdminClient();
     const user = await getLoggedInUser();
@@ -263,7 +265,7 @@ export const addNewWord = async (
                 Query.equal("firstLang", [firstLang]),
                 Query.equal("secondLang", [secondLang]),
             ]),
-        ]
+        ],
     );
     if (fetchedWords.documents.length >= 1)
         return { success: false, error: "Word already exists" };
@@ -275,10 +277,11 @@ export const addNewWord = async (
         {
             firstLang,
             secondLang,
+            desc,
             userId: user.$id,
             languageId,
             path,
-        }
+        },
     );
 
     if (!promise) return { success: false, error: "Error creating word" };
@@ -295,7 +298,7 @@ export const addNewWord = async (
 
 export const deleteDocument = async (
     type: "folder" | "word",
-    documentId: string
+    documentId: string,
 ) => {
     const user = await getLoggedInUser();
     const { database } = await createAdminClient();
@@ -305,7 +308,7 @@ export const deleteDocument = async (
     const fetchedData = await database.getDocument(
         DATABASE_ID!,
         collectionId!,
-        documentId
+        documentId,
     );
     let deleted: any = false;
     if (fetchedData.userId === user.$id) {
@@ -326,15 +329,15 @@ const deleteAllIncludedWords = async (path: string, name: string) => {
         [
             Query.startsWith(
                 "path",
-                `${path}${name}/`.trim().replaceAll(" ", "-")
+                `${path}${name}/`.trim().replaceAll(" ", "-"),
             ),
-        ]
+        ],
     );
     fetchedWords.documents.forEach(async (word) => {
         await database.deleteDocument(
             DATABASE_ID!,
             WORDS_COLLECTION_ID!,
-            word.$id
+            word.$id,
         );
     });
 };
@@ -346,23 +349,23 @@ const deleteAllSubDir = async (path: string, name: string) => {
         [
             Query.startsWith(
                 "path",
-                `${path}${name}/`.trim().replaceAll(" ", "-")
+                `${path}${name}/`.trim().replaceAll(" ", "-"),
             ),
-        ]
+        ],
     );
 
     fetchedFolders.documents.forEach(async (folder) => {
         await database.deleteDocument(
             DATABASE_ID!,
             FOLDERS_COLLECTION_ID!,
-            folder.$id
+            folder.$id,
         );
     });
 };
 export const editDocument = async (
     type: "folder" | "word",
     documentId: string,
-    data: any
+    data: any,
 ) => {
     const user = await getLoggedInUser();
     const { database } = await createAdminClient();
@@ -372,7 +375,7 @@ export const editDocument = async (
     const fetchedData = await database.getDocument(
         DATABASE_ID!,
         collectionId!,
-        documentId
+        documentId,
     );
     let edited: { success: boolean; error?: string; data?: any } = {
         success: false,
@@ -384,7 +387,7 @@ export const editDocument = async (
             DATABASE_ID!,
             collectionId!,
             documentId,
-            data
+            data,
         );
         edited = {
             success: true,
@@ -397,7 +400,7 @@ export const editDocument = async (
 export const getTestWords = async (
     languageId: string,
     path: string,
-    showAllWords?: boolean
+    showAllWords?: boolean,
 ) => {
     const { database } = await createAdminClient();
     const user = await getLoggedInUser();
@@ -421,7 +424,7 @@ export const getTestWords = async (
             Query.select(["firstLang", "secondLang", "$id", "path"]),
             Query.and(wordsQueriesArray),
             Query.limit(100000000),
-        ]
+        ],
     );
     const words: WordTestType[] = fetchedWords.documents.map((w) => ({
         $id: w.$id,

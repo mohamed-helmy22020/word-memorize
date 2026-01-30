@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
 const WordDialog = ({
     setOpen,
     setWords,
@@ -22,22 +23,77 @@ const WordDialog = ({
     const { currentLanguage } = useLanguagesStore();
     const [firstLang, setFirstLang] = useState(word ? word.firstLang : "");
     const [secondLang, setSecondLang] = useState(word ? word.secondLang : "");
+    const [desc, setDesc] = useState(word?.desc ? word.desc : "");
     const [isLoading, setIsLoading] = useState(false);
+    const [isTranslating, setIsTranslating] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState("");
+    const [translationType, setTranslationType] =
+        useState<TranslationTypes>("translate");
     const { pathName: path } = usePathNameStore();
+
+    const handleGenerateDesc = async () => {
+        if (secondLang.trim() === "") {
+            setError("Please enter a word to generate description");
+            return;
+        }
+        setDesc("");
+        setError("");
+        setIsGenerating(true);
+        try {
+            const res = await fetch(`/api/generate-desc?word=${secondLang}`, {
+                method: "GET",
+            });
+            if (!res.ok) {
+                throw new Error(
+                    "Failed to generate description try again later",
+                );
+            }
+            const data = await res.text();
+            setDesc(data);
+        } catch (error) {
+            setError("Failed to generate description try again later");
+        }
+        setIsGenerating(false);
+    };
+
+    const handleTranslate = async () => {
+        if (secondLang.trim() === "") {
+            setError("Please enter a word to translate");
+            return;
+        }
+        setIsTranslating(true);
+        try {
+            const res = await fetch(
+                `/api/translate/${translationType === "ai" ? "ai/" : ""}?sentence=${secondLang}&sl=${currentLanguage.code}&tl=ar`,
+                {
+                    method: "GET",
+                },
+            );
+            if (!res.ok) {
+                throw new Error("Failed to translate");
+            }
+            const data = await res.text();
+            setFirstLang(data);
+        } catch (error) {
+            setError("Failed to translate try again later");
+        }
+        setIsTranslating(false);
+    };
 
     const handleAddNewWord = async () => {
         setIsLoading(true);
 
         if (firstLang.trim() === "" || secondLang.trim() === "") {
             setIsLoading(false);
-            setError("Please enter word");
+            setError("Please enter a word");
             return;
         }
         if (isEdit) {
             const editedWord = await editDocument("word", word?.$id!, {
                 firstLang,
                 secondLang,
+                desc,
             });
             if (!editedWord.success) {
                 setError(editedWord.error!);
@@ -65,8 +121,9 @@ const WordDialog = ({
         const addedWord = await addNewWord(
             firstLang,
             secondLang,
+            desc,
             path!,
-            currentLanguage.$id
+            currentLanguage.$id,
         );
         if (addedWord.error) {
             setError(addedWord.error);
@@ -86,7 +143,7 @@ const WordDialog = ({
                 </DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-2 items-center space-x-2">
-                <div className="grid flex-1 gap-2 w-full">
+                <div className="relative grid flex-1 gap-2 w-full">
                     <Label htmlFor="first-lang" className="sr-only">
                         First Language
                     </Label>
@@ -99,7 +156,7 @@ const WordDialog = ({
                         onBlur={(e) => setFirstLang(e.target.value.trim())}
                     />
                 </div>
-                <div className="grid flex-1 gap-2  w-full">
+                <div className="relative grid flex-1 gap-2  w-full">
                     <Label htmlFor="second-lang" className="sr-only">
                         Second Language
                     </Label>
@@ -111,6 +168,40 @@ const WordDialog = ({
                         onChange={(e) => setSecondLang(e.target.value)}
                         onBlur={(e) => setSecondLang(e.target.value.trim())}
                     />
+                    <div className="absolute end-0">
+                        <Button
+                            variant={"outline"}
+                            onClick={handleTranslate}
+                            disabled={isTranslating}
+                        >
+                            {isTranslating ? "Translating..." : "Translate"}
+                        </Button>
+                    </div>
+                </div>
+                <div className="relative grid flex-1 gap-2 w-full">
+                    <Label htmlFor="first-lang" className="sr-only">
+                        Description
+                    </Label>
+                    <Textarea
+                        id="desc"
+                        className="focus-visible:ring-transparent"
+                        value={desc}
+                        placeholder="Description"
+                        onChange={(e) => setDesc(e.target.value)}
+                        onBlur={(e) => setDesc(e.target.value.trim())}
+                    />
+                    <div className="absolute end-2 bottom-2">
+                        <Button
+                            variant={"outline"}
+                            onClick={handleGenerateDesc}
+                            disabled={isGenerating}
+                            className="text-xs p-1"
+                        >
+                            {isGenerating
+                                ? "Generating..."
+                                : "Generate with AI"}
+                        </Button>
+                    </div>
                 </div>
             </div>
             <div className="text-md text-red-600 font-bold">{error}</div>
