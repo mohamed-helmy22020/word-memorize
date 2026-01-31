@@ -18,13 +18,13 @@ const Folder = ({
 }) => {
     const handleDelete = async () => {
         const deleteConfirm = confirm(
-            "Are you sure you want to delete this word?"
+            "Are you sure you want to delete this folder and all its words?",
         );
         if (!deleteConfirm) return;
         const success = await deleteDocument("folder", folder.$id);
         if (success) {
             setFolders((prevFolders) =>
-                prevFolders.filter((f) => f.$id !== folder.$id)
+                prevFolders.filter((f) => f.$id !== folder.$id),
             );
         }
     };

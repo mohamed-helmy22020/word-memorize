@@ -290,6 +290,7 @@ export const addNewWord = async (
         newWord: {
             firstLang,
             secondLang,
+            desc,
             $id: promise.$id,
             path,
         },
@@ -389,6 +390,7 @@ export const editDocument = async (
             documentId,
             data,
         );
+        console.log({ result, data });
         edited = {
             success: true,
             data: { ...data, $id: result.$id },
