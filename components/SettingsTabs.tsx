@@ -6,7 +6,7 @@ import SettingsTranslation from "./SettingsTranslation";
 import SettingsUI from "./SettingsUI";
 
 const SettingsTabs = async () => {
-    const user = await getLoggedInUser();
+    const user: User = await getLoggedInUser();
     console.log({ user });
     return (
         <div>
@@ -32,10 +32,10 @@ const SettingsTabs = async () => {
                     <SettingsUI />
                 </TabsContent>
                 <TabsContent value="translation">
-                    <SettingsTranslation />
+                    <SettingsTranslation user={user} />
                 </TabsContent>
                 <TabsContent value="ai">
-                    <SettingsAI />
+                    <SettingsAI user={user} />
                 </TabsContent>
             </Tabs>
         </div>

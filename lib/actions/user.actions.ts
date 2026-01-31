@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
+import { encrypt } from "../encryption";
 import { parseStringify } from "../utils";
 const {
     APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -107,10 +108,12 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 };
 
 export const updateUserInfo = async (userId: string, userData: EditParams) => {
-    const {
-        language: { code: language },
-        name,
-    } = userData;
+    const { name, translationType } = userData;
+    const language = userData.language?.code;
+    let apiKey = userData.apiKey;
+    if (apiKey) {
+        apiKey = await encrypt(apiKey as string);
+    }
 
     try {
         const { database } = await createAdminClient();
@@ -122,6 +125,8 @@ export const updateUserInfo = async (userId: string, userData: EditParams) => {
             {
                 name,
                 language,
+                translationType,
+                ai_key: apiKey,
             },
         );
         revalidatePath("/settings");

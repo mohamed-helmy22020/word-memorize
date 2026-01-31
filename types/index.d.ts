@@ -18,11 +18,13 @@ declare type LoginUser = {
 };
 
 declare type EditParams = {
-    name: string;
-    language: {
+    name?: string;
+    language?: {
         name: string;
         code: string;
     };
+    translationType?: TranslationTypes;
+    apiKey?: string;
 };
 
 declare type User = {
@@ -31,6 +33,8 @@ declare type User = {
     name: string;
     language: string;
     languages: LanguageType[];
+    translationType: TranslationTypes;
+    ai_key: string;
 };
 declare type LanguageType = {
     $id: string;
@@ -114,4 +118,4 @@ declare interface WordTestType extends WordType {
     answer?: string;
 }
 
-type TranslationTypes = "ai" | "translate";
+type TranslationTypes = "ai" | "provider";

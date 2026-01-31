@@ -1,9 +1,13 @@
 "use client";
-import { addNewWord, editDocument } from "@/lib/actions/user.actions";
+import {
+    addNewWord,
+    editDocument,
+    getLoggedInUser,
+} from "@/lib/actions/user.actions";
 import { usePathNameStore } from "@/store/pathnameStore";
 import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -28,9 +32,22 @@ const WordDialog = ({
     const [isTranslating, setIsTranslating] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState("");
-    const [translationType, setTranslationType] =
-        useState<TranslationTypes>("translate");
+    const [user, setUser] = useState<User | null>(null);
+    console.log({ user });
+
     const { pathName: path } = usePathNameStore();
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const user = await getLoggedInUser();
+                setUser(user);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getUserInfo();
+    }, []);
 
     const handleGenerateDesc = async () => {
         if (secondLang.trim() === "") {
@@ -44,15 +61,13 @@ const WordDialog = ({
             const res = await fetch(`/api/generate-desc?word=${secondLang}`, {
                 method: "GET",
             });
-            if (!res.ok) {
-                throw new Error(
-                    "Failed to generate description try again later",
-                );
-            }
             const data = await res.text();
+            if (!res.ok) {
+                throw setError(data);
+            }
             setDesc(data);
-        } catch (error) {
-            setError("Failed to generate description try again later");
+        } catch (error: any) {
+            console.log(error);
         }
         setIsGenerating(false);
     };
@@ -65,18 +80,18 @@ const WordDialog = ({
         setIsTranslating(true);
         try {
             const res = await fetch(
-                `/api/translate/${translationType === "ai" ? "ai/" : ""}?sentence=${secondLang}&sl=${currentLanguage.code}&tl=ar`,
+                `/api/translate/${user?.translationType === "ai" ? "ai/" : ""}?sentence=${secondLang}&sl=${currentLanguage.code}&tl=ar`,
                 {
                     method: "GET",
                 },
             );
-            if (!res.ok) {
-                throw new Error("Failed to translate");
-            }
             const data = await res.text();
+            if (!res.ok) {
+                throw setError(data);
+            }
             setFirstLang(data);
-        } catch (error) {
-            setError("Failed to translate try again later");
+        } catch (error: any) {
+            console.log(error);
         }
         setIsTranslating(false);
     };

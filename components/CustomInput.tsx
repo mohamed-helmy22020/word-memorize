@@ -33,7 +33,7 @@ const CustomInput = ({
                                 className="focus-visible:ring-transparent"
                                 {...field}
                                 type={type}
-                            ></Input>
+                            />
                         </FormControl>
                         <FormMessage className="form-message mt-2" />
                     </div>
