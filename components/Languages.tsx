@@ -21,11 +21,11 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
 
     useLayoutEffect(() => {
         setLangs(
-            userLangs.map((l) => ({
+            userLangs?.map((l) => ({
                 $id: l.$id,
                 code: l.code,
                 name: l.name,
-            }))
+            })),
         );
         let currentLanguage = { name: "", code: "", $id: "" };
         try {
@@ -33,7 +33,7 @@ const Languages = ({ userLangs }: { userLangs: LanguageType[] }) => {
                 ? JSON.parse(sessionStorage.getItem("currentLanguage")!)
                 : "";
         } catch (e) {
-            console.log({ e1: e });
+            console.log({ e });
         }
 
         changeCurrentLanguage(currentLanguage);

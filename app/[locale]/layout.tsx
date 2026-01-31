@@ -34,6 +34,7 @@ export default async function LocaleLayout({
             lang={locale}
             dir={locale === "ar" ? "rtl" : "ltr"}
             className="dark"
+            suppressHydrationWarning
         >
             <body
                 className={`${inter.variable} ${ibmPlexSerif.variable} ${cairo.variable}`}

@@ -22,7 +22,6 @@ export async function GET(request: Request) {
             prompt: `only give me the translation , don't give any other text only the translation if selected or target language is incorrect return exactly invalid selected or target language in english don't anything else and if the sentence is invalid sentence or not from the selected language return only invalid sentence in english
             ${prompt}`,
         });
-        console.log(text);
         if (
             text.toLowerCase().includes("invalid sentence") ||
             text.toLowerCase().includes("invalid selected language") ||
@@ -30,7 +29,6 @@ export async function GET(request: Request) {
         ) {
             return new Response("Error generating content", { status: 400 });
         }
-        console.log(text);
         return new Response(text);
     } catch (e) {
         console.log({ e });

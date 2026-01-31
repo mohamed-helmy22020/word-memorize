@@ -20,18 +20,18 @@ import {
 import { cn, languagesArray } from "@/lib/utils";
 import { useLanguagesStore } from "@/store/userLanguagesStore";
 
-interface Lang {
-    name: string;
-    code: string;
-}
 interface LanguageSelectProps {
     lang: Lang;
-    setLang: React.Dispatch<React.SetStateAction<Lang>>;
+    setLang: (lang: Lang) => void;
+    allLanguages?: boolean;
 }
-const LanguageSelect = ({ lang, setLang }: LanguageSelectProps) => {
+const LanguageSelect = ({
+    lang,
+    setLang,
+    allLanguages,
+}: LanguageSelectProps) => {
     const [open, setOpen] = React.useState(false);
     const { languages } = useLanguagesStore();
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -41,9 +41,9 @@ const LanguageSelect = ({ lang, setLang }: LanguageSelectProps) => {
                     aria-expanded={open}
                     className="w-full justify-between"
                 >
-                    {lang.name
+                    {lang.code
                         ? languagesArray.find(
-                              (language) => language.name === lang.name
+                              (language) => language.code === lang.code,
                           )?.name
                         : "Select language..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -58,9 +58,10 @@ const LanguageSelect = ({ lang, setLang }: LanguageSelectProps) => {
                             {languagesArray
                                 .filter(
                                     (l) =>
+                                        allLanguages ||
                                         languages.findIndex(
-                                            (l2) => l2.code === l.code
-                                        ) === -1
+                                            (l2) => l2.code === l.code,
+                                        ) === -1,
                                 )
                                 .map((language) => (
                                     <CommandItem
@@ -77,9 +78,9 @@ const LanguageSelect = ({ lang, setLang }: LanguageSelectProps) => {
                                         <Check
                                             className={cn(
                                                 "mr-2 h-4 w-4",
-                                                lang.name === language.name
+                                                lang.code === language.code
                                                     ? "opacity-100"
-                                                    : "opacity-0"
+                                                    : "opacity-0",
                                             )}
                                         />
                                         {language.name}

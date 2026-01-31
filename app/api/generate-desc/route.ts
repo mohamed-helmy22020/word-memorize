@@ -16,7 +16,6 @@ export async function GET(request: Request) {
             prompt: `only give me the description , don't give any other text only the description if the word is invalid word return only invalid word
             ${prompt}`,
         });
-        console.log({ text });
         if (text.toLowerCase().includes("invalid word")) {
             return new Response("Error generating content", { status: 400 });
         }

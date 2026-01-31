@@ -3,7 +3,7 @@ import { addNewFolder } from "@/lib/actions/user.actions";
 import { usePathNameStore } from "@/store/pathnameStore";
 import { useLanguagesStore } from "@/store/userLanguagesStore";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -38,7 +38,7 @@ const FolderDialog = ({
         const addedFolder = await addNewFolder(
             folderName,
             path!,
-            currentLanguage.$id
+            currentLanguage.$id,
         );
         if (addedFolder.error) {
             setError(addedFolder.error);
@@ -59,9 +59,6 @@ const FolderDialog = ({
         }
         setOpen(false);
     };
-    useEffect(() => {
-        console.log(path);
-    }, [path]);
 
     return (
         <>

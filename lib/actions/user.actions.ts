@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
@@ -19,7 +20,6 @@ export async function getLoggedInUser() {
 
         return parseStringify(user);
     } catch (error: any) {
-        console.log({ e3: error.message });
         return null;
     }
 }
@@ -35,7 +35,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
         );
         return parseStringify(user.documents[0]);
     } catch (error) {
-        console.log({ e2: error });
+        console.log({ error });
     }
 };
 
@@ -62,7 +62,7 @@ export const signIn = async ({ email, password }: signInProps) => {
 
 export const signUp = async ({ password, ...userData }: SignUpParams) => {
     const { email } = userData;
-    const name = email.split("@")[0];
+    const name = email.split("@")[0].replaceAll(".", " ");
     let newUserAccount;
 
     try {
@@ -101,6 +101,31 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
         });
 
         return parseStringify(newUser);
+    } catch (error: any) {
+        return parseStringify({ error: error.message });
+    }
+};
+
+export const updateUserInfo = async (userId: string, userData: EditParams) => {
+    const {
+        language: { code: language },
+        name,
+    } = userData;
+
+    try {
+        const { database } = await createAdminClient();
+        const user = await getUserInfo({ userId });
+        const updatedUser = await database.updateDocument(
+            DATABASE_ID!,
+            USER_COLLECTION_ID!,
+            user.$id,
+            {
+                name,
+                language,
+            },
+        );
+        revalidatePath("/settings");
+        return parseStringify(updatedUser);
     } catch (error: any) {
         return parseStringify({ error: error.message });
     }
@@ -390,7 +415,6 @@ export const editDocument = async (
             documentId,
             data,
         );
-        console.log({ result, data });
         edited = {
             success: true,
             data: { ...data, $id: result.$id },

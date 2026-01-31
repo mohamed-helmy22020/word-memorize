@@ -17,10 +17,19 @@ declare type LoginUser = {
     password: string;
 };
 
+declare type EditParams = {
+    name: string;
+    language: {
+        name: string;
+        code: string;
+    };
+};
+
 declare type User = {
     id: string;
     email: string;
     name: string;
+    language: string;
     languages: LanguageType[];
 };
 declare type LanguageType = {
@@ -28,7 +37,10 @@ declare type LanguageType = {
     name: string;
     code: string;
 };
-
+interface Lang {
+    name: string;
+    code: string;
+}
 declare type NewUserParams = {
     id: string;
     email: string;

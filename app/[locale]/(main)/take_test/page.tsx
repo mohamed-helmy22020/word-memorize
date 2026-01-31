@@ -22,7 +22,7 @@ const TakeTestPage = () => {
             state.tests?.find((test) => test.id === testId),
             state.finishTest,
             state.setTestWord,
-        ]
+        ],
     );
     const testWords = currentTest?.words;
     const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
@@ -45,14 +45,10 @@ const TakeTestPage = () => {
                 isSolved: true,
                 answer: answer.trim(),
             },
-            currentTest?.id
+            currentTest?.id,
         );
         setCurrentWordIndex((prev) => Math.min(prev + 1, testWords.length - 1));
     };
-
-    useEffect(() => {
-        console.log({ testWords, currentTest, tests });
-    }, [currentTest, tests, testWords]);
 
     if (tests?.length !== undefined && tests.length === 0) {
         redirect("/");
@@ -77,7 +73,7 @@ const TakeTestPage = () => {
 
     const handleListen = () => {
         const speech = new SpeechSynthesisUtterance(
-            testWords[currentWordIndex]?.secondLang
+            testWords[currentWordIndex]?.secondLang,
         );
         speech.lang = currentLanguage.code;
         speech.rate = 0.8;
@@ -209,7 +205,7 @@ const BottomPanel = ({
                 <button
                     onClick={() => {
                         setCurrentWordIndex((prev) =>
-                            Math.min(prev + 1, testWords.length - 1)
+                            Math.min(prev + 1, testWords.length - 1),
                         );
                     }}
                     className="flex justify-center items-center p-5 hover:bg-slate-400 cursor-pointer rounded-md"
@@ -225,7 +221,7 @@ const BottomPanel = ({
                             `cursor-pointer bg-slate-800 p-2 rounded-md w-16 h-16 flex justify-center items-center transition-colors duration-500`,
                             word.isSolved && word.isCorrect && "bg-green-500",
                             word.isSolved && !word.isCorrect && "bg-red-500",
-                            index === currentWordIndex && "bg-[#f39200]"
+                            index === currentWordIndex && "bg-[#f39200]",
                         )}
                         onClick={() => {
                             setCurrentWordIndex(index);

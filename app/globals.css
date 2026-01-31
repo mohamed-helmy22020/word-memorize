@@ -96,7 +96,7 @@
         @apply flex items-center justify-center;
     }
     .sidebar {
-        @apply bg-[#242526] left-0 top-0 flex h-screen w-fit flex-col  gap-6 border-r border-l border-gray-700  pt-8 text-white p-6 2xl:w-[355px] sticky max-md:fixed max-md:-translate-x-full transition-all z-50 pb-0;
+        @apply bg-[#242526] left-0 top-0 flex h-screen min-w-72 flex-col  gap-6 border-r border-l border-gray-700  pt-8 text-white p-6 2xl:w-[355px] sticky max-md:fixed max-md:-translate-x-full transition-all z-50 pb-0;
     }
     .sidebar.show {
         @apply max-md:translate-x-0;

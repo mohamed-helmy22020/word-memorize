@@ -1,14 +1,12 @@
 import { authFormSchema } from "@/lib/utils";
-import { Control, FieldPath } from "react-hook-form";
-import { z } from "zod";
 import { FormControl, FormField, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 
 const formSchema = authFormSchema();
 
 type CustomInputType = {
-    control: Control<z.infer<typeof formSchema>>;
-    name: FieldPath<z.infer<typeof formSchema>>;
+    control: any;
+    name: any;
     label: string;
     placeholder: string;
     type?: string;

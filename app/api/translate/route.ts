@@ -21,7 +21,6 @@ export async function GET(request: Request) {
             },
         );
         const response = await result.json();
-        console.log(response[0][0][0]);
 
         return new Response(response[0][0][0]);
     } catch (e) {

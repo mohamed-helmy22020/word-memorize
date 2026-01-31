@@ -11,6 +11,17 @@ export const authFormSchema = () =>
         email: z.string().email(),
         password: z.string().min(8),
     });
+
+export const accountFormSchema = () =>
+    z.object({
+        name: z
+            .string()
+            .min(2, { message: "Name must be at least 2 characters" }),
+        language: z.object({
+            name: z.string(),
+            code: z.string(),
+        }),
+    });
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 export const removeSpecialCharacters = (value: string) => {
     return value.replace(/[^\w\s]/gi, "");
